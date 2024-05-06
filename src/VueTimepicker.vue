@@ -11,6 +11,7 @@ const CONFIG = {
 
 const DEFAULT_OPTIONS = {
   format: 'HH:mm',
+  confirmButtonText: 'OK',
   minuteInterval: 1,
   secondInterval: 1,
   hourRange: null,
@@ -31,58 +32,60 @@ export default {
   name: 'VueTimepicker',
 
   props: {
-    modelValue: { type: [ Object, String ] },
-    format: { type: String },
-    minuteInterval: { type: [ Number, String ] },
-    secondInterval: { type: [ Number, String ] },
+    modelValue: {type: [Object, String]},
+    format: {type: String},
+    minuteInterval: {type: [Number, String]},
+    secondInterval: {type: [Number, String]},
 
-    hourRange: { type: Array },
-    minuteRange: { type: Array },
-    secondRange: { type: Array },
+    hourRange: {type: Array},
+    minuteRange: {type: Array},
+    secondRange: {type: Array},
 
-    hideDisabledHours: { type: Boolean, default: false },
-    hideDisabledMinutes: { type: Boolean, default: false },
-    hideDisabledSeconds: { type: Boolean, default: false },
-    hideDisabledItems: { type: Boolean, default: false },
+    hideDisabledHours: {type: Boolean, default: false},
+    hideDisabledMinutes: {type: Boolean, default: false},
+    hideDisabledSeconds: {type: Boolean, default: false},
+    hideDisabledItems: {type: Boolean, default: false},
 
-    hideClearButton: { type: Boolean, default: false },
-    disabled: { type: Boolean, default: false },
-    closeOnComplete: { type: Boolean, default: false },
+    hideClearButton: {type: Boolean, default: false},
+    disabled: {type: Boolean, default: false},
+    closeOnComplete: {type: Boolean, default: false},
 
-    id: { type: String },
-    name: { type: String },
-    inputClass: { type: [ String, Object, Array ] },
-    placeholder: { type: String },
-    tabindex: { type: [ Number, String ], default: 0 },
-    inputWidth: { type: String },
-    autocomplete: { type: String, default: 'off' },
+    id: {type: String},
+    name: {type: String},
+    inputClass: {type: [String, Object, Array]},
+    placeholder: {type: String},
+    tabindex: {type: [Number, String], default: 0},
+    inputWidth: {type: String},
+    autocomplete: {type: String, default: 'off'},
 
-    hourLabel: { type: String },
-    minuteLabel: { type: String },
-    secondLabel: { type: String },
-    apmLabel: { type: String },
-    amText: { type: String },
-    pmText: { type: String },
+    hourLabel: {type: String},
+    minuteLabel: {type: String},
+    secondLabel: {type: String},
+    apmLabel: {type: String},
+    amText: {type: String},
+    pmText: {type: String},
 
-    blurDelay: { type: [ Number, String ] },
-    advancedKeyboard: { type: Boolean, default: false },
+    confirmButtonText: {type: String},
 
-    lazy: { type: Boolean, default: false },
-    autoScroll: { type: Boolean, default: false },
+    blurDelay: {type: [Number, String]},
+    advancedKeyboard: {type: Boolean, default: false},
 
-    dropDirection: { type: String, default: 'down' },
-    dropOffsetHeight: { type: [ Number, String ] },
-    containerId: { type: String },
+    lazy: {type: Boolean, default: false},
+    autoScroll: {type: Boolean, default: false},
 
-    manualInput: { type: Boolean, default: false },
-    manualInputTimeout: { type: [ Number, String ] },
-    hideDropdown: { type: Boolean, default: false },
-    fixedDropdownButton: { type: Boolean, default: false },
+    dropDirection: {type: String, default: 'down'},
+    dropOffsetHeight: {type: [Number, String]},
+    containerId: {type: String},
 
-    debugMode: { type: Boolean, default: false }
+    manualInput: {type: Boolean, default: false},
+    manualInputTimeout: {type: [Number, String]},
+    hideDropdown: {type: Boolean, default: false},
+    fixedDropdownButton: {type: Boolean, default: false},
+
+    debugMode: {type: Boolean, default: false}
   },
 
-  data () {
+  data() {
     return {
       timeValue: {},
 
@@ -119,7 +122,7 @@ export default {
   emits: ['update:modelValue', 'change', 'open', 'close', 'focus', 'blur', 'error'],
 
   computed: {
-    opts () {
+    opts() {
       const options = Object.assign({}, DEFAULT_OPTIONS)
 
       if (this.format && this.format.length) {
@@ -222,15 +225,15 @@ export default {
       return options
     },
 
-    useStringValue () {
+    useStringValue() {
       return typeof this.modelValue === 'string'
     },
 
-    formatString () {
+    formatString() {
       return this.opts.format || DEFAULT_OPTIONS.format
     },
 
-    inUse () {
+    inUse() {
       const typesInUse = CONFIG.BASIC_TYPES.filter(type => this.getTokenByType(type))
       // Sort types and tokens by their sequence in the "format" string
       typesInUse.sort((l, r) => {
@@ -247,7 +250,7 @@ export default {
       }
     },
 
-    displayTime () {
+    displayTime() {
       let formatString = String(this.formatString)
       if (this.hour) {
         formatString = formatString.replace(new RegExp(this.hourType, 'g'), this.hour)
@@ -264,55 +267,61 @@ export default {
       return formatString
     },
 
-    customDisplayTime () {
+    customDisplayTime() {
       if (!this.amText && !this.pmText) {
         return this.displayTime
       }
       return this.displayTime.replace(new RegExp(this.apm, 'g'), this.apmDisplayText(this.apm))
     },
 
-    inputIsEmpty () {
+    inputIsEmpty() {
       return this.formatString === this.displayTime
     },
 
-    allValueSelected () {
+    allValueSelected() {
       if (
-        (this.inUse.hour && !this.hour) ||
-        (this.inUse.minute && !this.minute) ||
-        (this.inUse.second && !this.second) ||
-        (this.inUse.apm && !this.apm)
+          (this.inUse.hour && !this.hour) ||
+          (this.inUse.minute && !this.minute) ||
+          (this.inUse.second && !this.second) ||
+          (this.inUse.apm && !this.apm)
       ) {
         return false
       }
       return true
     },
 
-    columnsSequence () {
+    columnsSequence() {
       return this.inUse.types.map(type => type) || []
     },
 
-    showClearBtn () {
+    showClearBtn() {
       if (this.hideClearButton || this.disabled) {
         return false
       }
       return !this.inputIsEmpty
     },
 
-    showDropdownBtn () {
-      if (this.fixedDropdownButton) { return true }
+    showDropdownBtn() {
+      if (this.fixedDropdownButton) {
+        return true
+      }
       if (this.opts.hideDropdown && this.isActive && !this.showDropdown) {
         return true
       }
       return false
     },
 
-    baseOn12Hours () {
+    baseOn12Hours() {
       return this.hourType === 'h' || this.hourType === 'hh'
     },
 
-    hourRangeIn24HrFormat () {
-      if (!this.hourType || !this.opts.hourRange) { return false }
-      if (!this.opts.hourRange.length) { return [] }
+    hourRangeIn24HrFormat() {
+      if (!this.hourType || !this.opts.hourRange) {
+        return false
+      }
+      if (!this.opts.hourRange.length) {
+        return []
+      }
 
       const range = []
       this.opts.hourRange.forEach(value => {
@@ -332,7 +341,9 @@ export default {
           }
 
           for (let i = +start; i <= +end; i++) {
-            if (i < 0 || i > 24) { continue }
+            if (i < 0 || i > 24) {
+              continue
+            }
             if (!range.includes(i)) {
               range.push(i)
             }
@@ -343,19 +354,25 @@ export default {
           } else {
             value = +value
           }
-          if (value < 0 || value > 24) { return }
+          if (value < 0 || value > 24) {
+            return
+          }
           if (!range.includes(value)) {
             range.push(value)
           }
         }
       })
-      range.sort((l, r) => { return l - r })
+      range.sort((l, r) => {
+        return l - r
+      })
       return range
     },
 
-    restrictedHourRange () {
+    restrictedHourRange() {
       // No restriction
-      if (!this.hourRangeIn24HrFormat) { return false }
+      if (!this.hourRangeIn24HrFormat) {
+        return false
+      }
       // 12-Hour
       if (this.baseOn12Hours) {
         const range = this.hourRangeIn24HrFormat.map((value) => {
@@ -372,8 +389,10 @@ export default {
       return this.hourRangeIn24HrFormat
     },
 
-    validHoursList () {
-      if (!this.manualInput) { return false }
+    validHoursList() {
+      if (!this.manualInput) {
+        return false
+      }
       if (this.restrictedHourRange) {
         let list = []
         if (this.baseOn12Hours) {
@@ -404,7 +423,7 @@ export default {
       return this.hours
     },
 
-    has () {
+    has() {
       const result = {
         customApmText: false
       }
@@ -424,44 +443,60 @@ export default {
       return result
     },
 
-    minuteRangeList () {
-      if (!this.minuteType || !this.opts.minuteRange) { return false }
-      if (!this.opts.minuteRange.length) { return [] }
+    minuteRangeList() {
+      if (!this.minuteType || !this.opts.minuteRange) {
+        return false
+      }
+      if (!this.opts.minuteRange.length) {
+        return []
+      }
       return this.renderRangeList(this.opts.minuteRange, 'minute')
     },
 
-    secondRangeList () {
-      if (!this.secondType || !this.opts.secondRange) { return false }
-      if (!this.opts.secondRange.length) { return [] }
+    secondRangeList() {
+      if (!this.secondType || !this.opts.secondRange) {
+        return false
+      }
+      if (!this.opts.secondRange.length) {
+        return []
+      }
       return this.renderRangeList(this.opts.secondRange, 'second')
     },
-    
-    hourLabelText () {
+
+    hourLabelText() {
       return this.hourLabel || this.hourType
     },
-    minuteLabelText () {
+    minuteLabelText() {
       return this.minuteLabel || this.minuteType
     },
     secondLabelText() {
       return this.secondLabel || this.secondType
     },
-    apmLabelText () {
+    apmLabelText() {
       return this.apmLabel || this.apmType
     },
 
-    inputWidthStyle () {
-      if (!this.inputWidth || !this.inputWidth.length) { return }
+    confirmText() {
+      return this.confirmButtonText || DEFAULT_OPTIONS.confirmButtonText;
+    },
+
+    inputWidthStyle() {
+      if (!this.inputWidth || !this.inputWidth.length) {
+        return
+      }
       return {
         width: this.inputWidth
       }
     },
 
-    tokenRegexBase () {
+    tokenRegexBase() {
       return this.inUse.tokens.join('|')
     },
 
-    tokenChunks () {
-      if (!this.manualInput && !this.useStringValue) { return false }
+    tokenChunks() {
+      if (!this.manualInput && !this.useStringValue) {
+        return false
+      }
 
       const formatString = String(this.formatString)
       const tokensRegxStr = `(${this.tokenRegexBase})+?`
@@ -482,13 +517,17 @@ export default {
       return tokenChunks
     },
 
-    needsPosCalibrate () {
-      if (!this.manualInput) { return false }
+    needsPosCalibrate() {
+      if (!this.manualInput) {
+        return false
+      }
       return this.tokenChunks.some(chk => chk.needsCalibrate)
     },
 
-    tokenChunksPos () {
-      if (!this.manualInput) { return false }
+    tokenChunksPos() {
+      if (!this.manualInput) {
+        return false
+      }
       if (!this.needsPosCalibrate) {
         return this.tokenChunks.map(chk => {
           return {
@@ -511,7 +550,7 @@ export default {
           } else {
             chunkCurrentLen = chk.len
           }
-        // Others
+          // Others
         } else {
           chunkCurrentLen = this[chk.type] && this[chk.type].length ? this[chk.type].length : chk.len
         }
@@ -528,9 +567,13 @@ export default {
       return list
     },
 
-    invalidValues () {
-      if (this.inputIsEmpty) { return [] }
-      if (!this.restrictedHourRange && !this.minuteRangeList && !this.secondRangeList && this.opts.minuteInterval === 1 && this.opts.secondInterval === 1) { return [] }
+    invalidValues() {
+      if (this.inputIsEmpty) {
+        return []
+      }
+      if (!this.restrictedHourRange && !this.minuteRangeList && !this.secondRangeList && this.opts.minuteInterval === 1 && this.opts.secondInterval === 1) {
+        return []
+      }
 
       const result = []
       if (this.inUse.hour && !this.isEmptyValue(this.hourType, this.hour) && (!this.isValidValue(this.hourType, this.hour) || this.isDisabled('hour', this.hour))) {
@@ -551,42 +594,42 @@ export default {
       return []
     },
 
-    hasInvalidInput () {
+    hasInvalidInput() {
       return Boolean(this.invalidValues && this.invalidValues.length)
     },
 
-    autoDirectionEnabled () {
+    autoDirectionEnabled() {
       return this.dropDirection === 'auto'
     },
 
-    dropdownDirClass () {
+    dropdownDirClass() {
       if (this.autoDirectionEnabled) {
         return this.forceDropOnTop ? 'drop-up' : 'drop-down'
       }
-      return this.dropDirection === 'up' ? 'drop-up' : 'drop-down'      
+      return this.dropDirection === 'up' ? 'drop-up' : 'drop-down'
     }
   },
 
   watch: {
-    'opts.format' (newValue) {
+    'opts.format'(newValue) {
       this.renderFormat(newValue)
     },
-    'opts.minuteInterval' (newInteval) {
+    'opts.minuteInterval'(newInteval) {
       this.renderList('minute', newInteval)
     },
-    'opts.secondInterval' (newInteval) {
+    'opts.secondInterval'(newInteval) {
       this.renderList('second', newInteval)
     },
-    value: {
+    modelValue: {
       deep: true,
-      handler () {
+      handler() {
         this.readValues()
       }
     },
-    displayTime () {
+    displayTime() {
       this.fillValues()
     },
-    disabled (toDisabled) {
+    disabled(toDisabled) {
       if (toDisabled) {
         // Force close dropdown and reset status when disabled
         if (this.isActive) {
@@ -597,7 +640,7 @@ export default {
         }
       }
     },
-    'invalidValues.length' (newLength, oldLength) {
+    'invalidValues.length'(newLength, oldLength) {
       if (newLength && newLength >= 1) {
         this.$emit('error', this.invalidValues)
       } else if (oldLength && oldLength >= 1) {
@@ -607,8 +650,10 @@ export default {
   },
 
   methods: {
-    formatValue (token, i) {
-      if (!this.isNumber(i)) { return '' }
+    formatValue(token, i) {
+      if (!this.isNumber(i)) {
+        return ''
+      }
       i = +i
       switch (token) {
         case 'H':
@@ -634,8 +679,10 @@ export default {
       }
     },
 
-    checkAcceptingType (validValues, formatString) {
-      if (!validValues || !formatString || !formatString.length) { return '' }
+    checkAcceptingType(validValues, formatString) {
+      if (!validValues || !formatString || !formatString.length) {
+        return ''
+      }
       for (let i = 0; i < validValues.length; i++) {
         if (formatString.indexOf(validValues[i]) > -1) {
           return validValues[i]
@@ -644,7 +691,7 @@ export default {
       return ''
     },
 
-    renderFormat (newFormat) {
+    renderFormat(newFormat) {
       newFormat = newFormat || this.opts.format || DEFAULT_OPTIONS.format
 
       let hourType = this.checkAcceptingType(CONFIG.HOUR_TOKENS, newFormat)
@@ -673,7 +720,7 @@ export default {
       })
     },
 
-    renderHoursList () {
+    renderHoursList() {
       const hoursCount = this.baseOn12Hours ? 12 : 24
       const hours = []
       for (let i = 0; i < hoursCount; i++) {
@@ -686,8 +733,10 @@ export default {
       this.hours = hours
     },
 
-    renderList (listType, interval) {
-      if (!this.isMinuteOrSecond(listType)) { return }
+    renderList(listType, interval) {
+      if (!this.isMinuteOrSecond(listType)) {
+        return
+      }
 
       const isMinute = listType === 'minute'
       interval = interval || (isMinute ? (this.opts.minuteInterval || DEFAULT_OPTIONS.minuteInterval) : (this.opts.secondInterval || DEFAULT_OPTIONS.secondInterval))
@@ -699,11 +748,11 @@ export default {
       isMinute ? this.minutes = result : this.seconds = result
     },
 
-    renderApmList () {
+    renderApmList() {
       this.apms = this.apmType === 'A' ? ['AM', 'PM'] : ['am', 'pm']
     },
 
-    readValues () {
+    readValues() {
       if (this.useStringValue) {
         if (this.debugMode) {
           this.debugLog(`Received a string value: "${this.modelValue}"`)
@@ -717,7 +766,7 @@ export default {
       }
     },
 
-    readObjectValues (objValue) {
+    readObjectValues(objValue) {
       const timeValue = JSON.parse(JSON.stringify(objValue || {}))
       const values = Object.keys(timeValue)
 
@@ -740,13 +789,13 @@ export default {
       this.timeValue = timeValue
     },
 
-    getMatchAllByRegex (testString, regexString) {
+    getMatchAllByRegex(testString, regexString) {
       const str = 'polyfillTest'
       const needsPolyfill = Boolean(!str.matchAll || typeof str.matchAll !== 'function')
       return needsPolyfill ? this.polyfillMatchAll(testString, regexString) : testString.matchAll(new RegExp(regexString, 'g'))
     },
 
-    readStringValues (stringValue) {
+    readStringValues(stringValue) {
       // Failsafe for empty `v-model` string
       if (!stringValue || !stringValue.length) {
         this.addFallbackValues()
@@ -819,7 +868,7 @@ export default {
       }
     },
 
-    polyfillMatchAll (targetString, regxStr) {
+    polyfillMatchAll(targetString, regxStr) {
       const matchesList = targetString.match(new RegExp(regxStr, 'g'))
       const result = []
       const indicesReg = []
@@ -848,7 +897,7 @@ export default {
       return result
     },
 
-    addFallbackValues () {
+    addFallbackValues() {
       const timeValue = {}
       this.inUse.types.forEach(type => {
         timeValue[this.getTokenByType(type)] = ''
@@ -856,16 +905,20 @@ export default {
       this.timeValue = timeValue
     },
 
-    setValueFromString (parsedValue, token) {
-      if (!token || !parsedValue) { return '' }
+    setValueFromString(parsedValue, token) {
+      if (!token || !parsedValue) {
+        return ''
+      }
       const tokenType = this.getTokenType(token)
-      if (!tokenType || !tokenType.length) { return '' }
+      if (!tokenType || !tokenType.length) {
+        return ''
+      }
       const stdValue = (parsedValue !== this.getTokenByType(tokenType)) ? parsedValue : ''
       this[tokenType] = stdValue
       return stdValue
     },
 
-    fillValues (forceEmit) {
+    fillValues(forceEmit) {
       const fullValues = {}
 
       const baseHour = this.hour
@@ -880,7 +933,7 @@ export default {
         fullValues.a = apmValue
         fullValues.A = apmValue.toUpperCase()
 
-      // Both Hour type and value are set
+        // Both Hour type and value are set
       } else {
         const hourValue = +baseHour
         const apmValue = (this.baseOn12Hours && this.apm) ? this.lowerCasedApm(this.apm) : false
@@ -921,7 +974,7 @@ export default {
               if (this.baseOn12Hours) {
                 value = hourValue
                 apm = apmValue || ''
-              // Read from other hour formats
+                // Read from other hour formats
               } else {
                 if (hourValue > 11 && hourValue < 24) {
                   apm = 'pm'
@@ -958,8 +1011,10 @@ export default {
       }
     },
 
-    emitTimeValue () {
-      if (!this.fullValues) { return }
+    emitTimeValue() {
+      if (!this.fullValues) {
+        return
+      }
 
       if (this.lazy && this.bakDisplayTime === this.displayTime) {
         if (this.debugMode) {
@@ -987,7 +1042,7 @@ export default {
       })
     },
 
-    translate12hRange (value) {
+    translate12hRange(value) {
       const valueT = this.match12hRange(value)
       if (+valueT[1] === 12) {
         return +valueT[1] + (valueT[2].toLowerCase() === 'p' ? 0 : 12)
@@ -995,8 +1050,10 @@ export default {
       return +valueT[1] + (valueT[2].toLowerCase() === 'p' ? 12 : 0)
     },
 
-    isDisabled (type, value) {
-      if (!this.isBasicType(type) || !this.inUse[type]) { return true }
+    isDisabled(type, value) {
+      if (!this.isBasicType(type) || !this.inUse[type]) {
+        return true
+      }
       switch (type) {
         case 'hour':
           return this.isDisabledHour(value)
@@ -1016,8 +1073,10 @@ export default {
       }
     },
 
-    isDisabledHour (value) {
-      if (!this.restrictedHourRange) { return false }
+    isDisabledHour(value) {
+      if (!this.restrictedHourRange) {
+        return false
+      }
       if (this.baseOn12Hours) {
         if (!this.apm || !this.apm.length) {
           return false
@@ -1028,22 +1087,28 @@ export default {
       }
       // Fallback for 'HH' and 'H hour format with a `hour-range` in a 12-hour form
       if (
-        (this.hourType === 'HH' || this.hourType === 'H') &&
-        +value === 0 && this.restrictedHourRange.includes(24)
+          (this.hourType === 'HH' || this.hourType === 'H') &&
+          +value === 0 && this.restrictedHourRange.includes(24)
       ) {
         return false
       }
       return !this.restrictedHourRange.includes(+value)
     },
 
-    notInInterval (section, value) {
-      if (!section || !this.isMinuteOrSecond(section)) { return }
-      if (this.opts[`${section}Interval`] === 1) { return false }
+    notInInterval(section, value) {
+      if (!section || !this.isMinuteOrSecond(section)) {
+        return
+      }
+      if (this.opts[`${section}Interval`] === 1) {
+        return false
+      }
       return +value % this.opts[`${section}Interval`] !== 0
     },
 
-    renderRangeList (rawRange, section) {
-      if (!rawRange || !section || !this.isMinuteOrSecond(section)) { return [] }
+    renderRangeList(rawRange, section) {
+      if (!rawRange || !section || !this.isMinuteOrSecond(section)) {
+        return []
+      }
       const range = []
       let formatedValue
       rawRange.forEach(value => {
@@ -1054,21 +1119,27 @@ export default {
           const start = value[0]
           const end = value[1] || value[0]
           for (let i = +start; i <= +end; i++) {
-            if (i < 0 || i > 59) { continue }
+            if (i < 0 || i > 59) {
+              continue
+            }
             formatedValue = this.formatValue(this.getTokenByType(section), i)
             if (!range.includes(formatedValue)) {
               range.push(formatedValue)
             }
           }
         } else {
-          if (+value < 0 || +value > 59) { return }
+          if (+value < 0 || +value > 59) {
+            return
+          }
           formatedValue = this.formatValue(this.getTokenByType(section), value)
           if (!range.includes(formatedValue)) {
             range.push(formatedValue)
           }
         }
       })
-      range.sort((l, r) => { return l - r })
+      range.sort((l, r) => {
+        return l - r
+      })
       // Debug Mode
       if (this.debugMode) {
         const fullList = (section === 'minute' ? this.minutes : this.seconds) || []
@@ -1084,7 +1155,7 @@ export default {
       return range
     },
 
-    forceApmSelection () {
+    forceApmSelection() {
       if (this.manualInput) {
         // Skip this to allow users to paste a string value from the clipboard in Manual Input mode
         return
@@ -1098,14 +1169,14 @@ export default {
       }
     },
 
-    emptyApmSelection () {
+    emptyApmSelection() {
       if (this.doClearApmChecking && this.hour === '' && this.minute === '' && this.second === '') {
         this.apm = ''
       }
       this.doClearApmChecking = false
     },
 
-    apmDisplayText (apmValue) {
+    apmDisplayText(apmValue) {
       if (this.amText && this.lowerCasedApm(apmValue) === 'am') {
         return this.amText
       }
@@ -1115,8 +1186,10 @@ export default {
       return apmValue
     },
 
-    toggleActive () {
-      if (this.disabled) { return }
+    toggleActive() {
+      if (this.disabled) {
+        return
+      }
       this.isActive = !this.isActive
 
       if (this.isActive) {
@@ -1160,14 +1233,14 @@ export default {
       }
     },
 
-    setDropdownState (toShow, fromUserClick = false) {
+    setDropdownState(toShow, fromUserClick = false) {
       if (toShow) {
         this.keepFocusing()
         if (this.autoDirectionEnabled) {
           this.checkDropDirection()
         }
         this.showDropdown = true
-        this.$emit('open') 
+        this.$emit('open')
         if (fromUserClick) {
           if (this.fixedDropdownButton) {
             this.isActive = true
@@ -1181,14 +1254,14 @@ export default {
       }
     },
 
-    blurEvent () {
+    blurEvent() {
       if (this.manualInput && !this.opts.hideDropdown) {
         // hideDropdown's `blur` event is handled somewhere else
         this.$emit('blur')
       }
     },
 
-    select (type, value) {
+    select(type, value) {
       if (this.isBasicType(type) && !this.isDisabled(type, value)) {
         this[type] = value
         if (this.doClearApmChecking) {
@@ -1197,8 +1270,10 @@ export default {
       }
     },
 
-    clearTime () {
-      if (this.disabled) { return }
+    clearTime() {
+      if (this.disabled) {
+        return
+      }
       this.hour = ''
       this.minute = ''
       this.second = ''
@@ -1217,8 +1292,10 @@ export default {
     // Auto-Scroll
     //
 
-    checkForAutoScroll () {
-      if (this.inputIsEmpty) { return }
+    checkForAutoScroll() {
+      if (this.inputIsEmpty) {
+        return
+      }
       if (this.autoScroll) {
         nextTick(() => {
           this.scrollToSelectedValues()
@@ -1232,8 +1309,10 @@ export default {
       }
     },
 
-    scrollToSelected (column, allowFallback = false) {
-      if (!this.timeValue || this.inputIsEmpty) { return }
+    scrollToSelected(column, allowFallback = false) {
+      if (!this.timeValue || this.inputIsEmpty) {
+        return
+      }
       const targetList = this.$el.querySelectorAll(`ul.${column}s`)[0]
       let targetValue = this.activeItemInCol(column)[0]
       if (!targetValue && allowFallback) {
@@ -1248,8 +1327,10 @@ export default {
       }
     },
 
-    scrollToSelectedValues () {
-      if (!this.timeValue || this.inputIsEmpty) { return }
+    scrollToSelectedValues() {
+      if (!this.timeValue || this.inputIsEmpty) {
+        return
+      }
       this.inUse.types.forEach(section => {
         this.scrollToSelected(section)
       })
@@ -1259,8 +1340,10 @@ export default {
     // Additional Keyboard Navigation
     //
 
-    onFocus () {
-      if (this.disabled) { return }
+    onFocus() {
+      if (this.disabled) {
+        return
+      }
       if (!this.isFocusing) {
         this.isFocusing = true
       }
@@ -1269,8 +1352,10 @@ export default {
       }
     },
 
-    escBlur () {
-      if (this.disabled) { return }
+    escBlur() {
+      if (this.disabled) {
+        return
+      }
       window.clearTimeout(this.debounceTimer)
       this.isFocusing = false
       const inputBox = this.$el.querySelectorAll('input.vue__time-picker-input')[0]
@@ -1279,8 +1364,10 @@ export default {
       }
     },
 
-    debounceBlur () {
-      if (this.disabled) { return }
+    debounceBlur() {
+      if (this.disabled) {
+        return
+      }
       this.isFocusing = false
       window.clearTimeout(this.debounceTimer)
       this.debounceTimer = window.setTimeout(() => {
@@ -1289,31 +1376,33 @@ export default {
       }, this.opts.blurDelay)
     },
 
-    onBlur () {
+    onBlur() {
       if (!this.disabled && !this.isFocusing && this.isActive) {
         this.toggleActive()
       }
     },
 
-    keepFocusing () {
-      if (this.disabled) { return }
+    keepFocusing() {
+      if (this.disabled) {
+        return
+      }
       window.clearTimeout(this.debounceTimer)
       if (!this.isFocusing) {
         this.isFocusing = true
       }
     },
 
-    validItemsInCol (column) {
+    validItemsInCol(column) {
       const columnClass = `${column}s`
       return this.$el.querySelectorAll(`ul.${columnClass} > li:not(.hint):not([disabled])`)
     },
 
-    activeItemInCol (column) {
+    activeItemInCol(column) {
       const columnClass = `${column}s`
       return this.$el.querySelectorAll(`ul.${columnClass} > li.active:not(.hint)`)
     },
 
-    getClosestSibling (column, dataKey, getPrevious = false) {
+    getClosestSibling(column, dataKey, getPrevious = false) {
       const siblingsInCol = this.validItemsInCol(column)
       const selfIndex = Array.prototype.findIndex.call(siblingsInCol, (sbl) => {
         return sbl.getAttribute('data-key') === dataKey
@@ -1338,21 +1427,21 @@ export default {
       return siblingsInCol[selfIndex + 1]
     },
 
-    prevItem (column, dataKey, isManualInput = false) {
+    prevItem(column, dataKey, isManualInput = false) {
       const targetItem = this.getClosestSibling(column, dataKey, true)
       if (targetItem) {
         return isManualInput ? targetItem : targetItem.focus()
       }
     },
 
-    nextItem (column, dataKey, isManualInput = false) {
+    nextItem(column, dataKey, isManualInput = false) {
       const targetItem = this.getClosestSibling(column, dataKey, false)
       if (targetItem) {
         return isManualInput ? targetItem : targetItem.focus()
       }
     },
 
-    getSideColumnName (currentColumn, toLeft = false) {
+    getSideColumnName(currentColumn, toLeft = false) {
       const currentColumnIndex = this.inUse.types.indexOf(currentColumn)
       if (toLeft && currentColumnIndex <= 0) {
         if (this.debugMode) {
@@ -1368,32 +1457,36 @@ export default {
       return this.inUse.types[toLeft ? currentColumnIndex - 1 : currentColumnIndex + 1]
     },
 
-    getFirstItemInSideColumn (currentColumn, toLeft = false) {
+    getFirstItemInSideColumn(currentColumn, toLeft = false) {
       const targetColumn = this.getSideColumnName(currentColumn, toLeft)
-      if (!targetColumn) { return }
+      if (!targetColumn) {
+        return
+      }
       const listItems = this.validItemsInCol(targetColumn)
       if (listItems && listItems[0]) {
         return listItems[0]
       }
     },
 
-    getActiveItemInSideColumn (currentColumn, toLeft = false) {
+    getActiveItemInSideColumn(currentColumn, toLeft = false) {
       const targetColumn = this.getSideColumnName(currentColumn, toLeft)
-      if (!targetColumn) { return }
+      if (!targetColumn) {
+        return
+      }
       const activeItems = this.activeItemInCol(targetColumn)
       if (activeItems && activeItems[0]) {
         return activeItems[0]
       }
     },
 
-    toLeftColumn (currentColumn) {
+    toLeftColumn(currentColumn) {
       const targetItem = this.getActiveItemInSideColumn(currentColumn, true) || this.getFirstItemInSideColumn(currentColumn, true)
       if (targetItem) {
         targetItem.focus()
       }
     },
 
-    toRightColumn (currentColumn) {
+    toRightColumn(currentColumn) {
       const targetItem = this.getActiveItemInSideColumn(currentColumn, false) || this.getFirstItemInSideColumn(currentColumn, false)
       if (targetItem) {
         targetItem.focus()
@@ -1404,8 +1497,10 @@ export default {
     // Manual Input
     //
 
-    onMouseDown () {
-      if (!this.manualInput) { return }
+    onMouseDown() {
+      if (!this.manualInput) {
+        return
+      }
       window.clearTimeout(this.selectionTimer)
       this.selectionTimer = window.setTimeout(() => {
         window.clearTimeout(this.selectionTimer)
@@ -1416,7 +1511,7 @@ export default {
       }, 50)
     },
 
-    keyDownHandler (evt) {
+    keyDownHandler(evt) {
       if (evt.isComposing || evt.keyCode === 229) {
         // Skip IME inputs
         evt.preventDefault()
@@ -1427,38 +1522,38 @@ export default {
       if ((evt.keyCode >= 48 && evt.keyCode <= 57) || (evt.keyCode >= 96 && evt.keyCode <= 105)) {
         evt.preventDefault()
         this.keyboardInput(evt.key)
-      // A|P|M
+        // A|P|M
       } else if ([65, 80, 77].includes(evt.keyCode)) {
         evt.preventDefault()
         this.keyboardInput(evt.key, true)
-      // Arrow keys
+        // Arrow keys
       } else if (evt.keyCode >= 37 && evt.keyCode <= 40) {
         evt.preventDefault()
         this.clearKbInputLog()
         this.arrowHandler(evt)
-      // Delete|Backspace
+        // Delete|Backspace
       } else if (evt.keyCode === 8 || evt.keyCode === 46) {
         evt.preventDefault()
         this.clearKbInputLog()
         this.clearTime()
-      // Tab
+        // Tab
       } else if (evt.keyCode === 9) {
         this.clearKbInputLog()
         this.tabHandler(evt)
-      // Prevent any Non-ESC and non-pasting inputs
+        // Prevent any Non-ESC and non-pasting inputs
       } else if (evt.keyCode !== 27 && !(evt.metaKey || evt.ctrlKey)) {
         evt.preventDefault()
       }
     },
 
-    onCompostionStart (evt) {
+    onCompostionStart(evt) {
       evt.preventDefault()
       evt.stopPropagation()
       this.bakCurrentPos = this.getCurrentTokenChunk()
       return false
     },
 
-    onCompostionEnd (evt) {
+    onCompostionEnd(evt) {
       evt.preventDefault()
       evt.stopPropagation()
 
@@ -1486,13 +1581,15 @@ export default {
       return false
     },
 
-    pasteHandler (evt) {
+    pasteHandler(evt) {
       evt.preventDefault()
       let pastingText = (evt.clipboardData || window.clipboardData).getData('text')
       if (this.debugMode) {
         this.debugLog(`Pasting value "${pastingText}" from clipboard`)
       }
-      if (!pastingText || !pastingText.length) { return }
+      if (!pastingText || !pastingText.length) {
+        return
+      }
 
       // Replace custom AM/PM text (if any)
       if (this.has.customApmText) {
@@ -1508,8 +1605,8 @@ export default {
       }
     },
 
-    arrowHandler (evt) {
-      const direction = { 37: 'L', 38: 'U', 39: 'R', 40: 'D' }[evt.keyCode]
+    arrowHandler(evt) {
+      const direction = {37: 'L', 38: 'U', 39: 'R', 40: 'D'}[evt.keyCode]
       if (direction === 'U' || direction === 'D') {
         if (this.inputIsEmpty) {
           this.selectFirstValidValue()
@@ -1531,10 +1628,12 @@ export default {
       }
     },
 
-    tabHandler (evt) {      
+    tabHandler(evt) {
       if (!this.inputIsEmpty && this.tokenChunksPos && this.tokenChunksPos.length) {
         const currentChunk = this.getCurrentTokenChunk()
-        if (!currentChunk) { return }
+        if (!currentChunk) {
+          return
+        }
         const firstChunk = this.tokenChunksPos[0]
         const lastChunk = this.tokenChunksPos[this.tokenChunksPos.length - 1]
         if ((evt.shiftKey && currentChunk.token !== firstChunk.token) || (!evt.shiftKey && currentChunk.token !== lastChunk.token)) {
@@ -1544,30 +1643,34 @@ export default {
       }
     },
 
-    keyboardInput (newChar, isApm = false) {
+    keyboardInput(newChar, isApm = false) {
       const currentChunk = this.getCurrentTokenChunk()
-      if (!currentChunk || (currentChunk.type !== 'apm' && isApm) || (currentChunk.type === 'apm' && !isApm)) { return }
+      if (!currentChunk || (currentChunk.type !== 'apm' && isApm) || (currentChunk.type === 'apm' && !isApm)) {
+        return
+      }
       this.kbInputLog = `${this.kbInputLog.substr(-1)}${newChar}`
       this.setKbInput()
       this.debounceClearKbLog()
     },
 
-    clearKbInputLog () {
+    clearKbInputLog() {
       window.clearTimeout(this.kbInputTimer)
       this.kbInputLog = ''
     },
 
-    debounceClearKbLog () {
+    debounceClearKbLog() {
       window.clearTimeout(this.kbInputTimer)
       this.kbInputTimer = window.setTimeout(() => {
         this.clearKbInputLog()
       }, this.opts.manualInputTimeout)
     },
 
-    setKbInput (value) {
+    setKbInput(value) {
       value = value || this.kbInputLog
       const currentChunk = this.getCurrentTokenChunk()
-      if (!currentChunk || !value || !value.length) { return }
+      if (!currentChunk || !value || !value.length) {
+        return
+      }
       const chunkType = currentChunk.type
       const chunkToken = currentChunk.token
 
@@ -1595,7 +1698,7 @@ export default {
       if (validValue) {
         this.setSanitizedValueToSection(chunkType, validValue)
         const newChunkPos = this.getCurrentTokenChunk()
-        this.debounceSetInputSelection(newChunkPos)      
+        this.debounceSetInputSelection(newChunkPos)
       }
       if (this.debugMode) {
         if (validValue) {
@@ -1607,16 +1710,20 @@ export default {
     },
 
     // Form Autofill
-    onChange () {
-      if (!this.manualInput || !this.$refs || !this.$refs.input) { return }
+    onChange() {
+      if (!this.manualInput || !this.$refs || !this.$refs.input) {
+        return
+      }
       const autoFillValue = this.$refs.input.value || ''
       if (autoFillValue && autoFillValue.length) {
         this.readStringValues(autoFillValue)
       }
     },
 
-    getNearestChunkByPos (startPos) {
-      if (!this.tokenChunksPos || !this.tokenChunksPos.length) { return }
+    getNearestChunkByPos(startPos) {
+      if (!this.tokenChunksPos || !this.tokenChunksPos.length) {
+        return
+      }
       let nearest
       let nearestDelta = -1
       for (let i = 0; i < this.tokenChunksPos.length; i++) {
@@ -1639,8 +1746,10 @@ export default {
       return nearest
     },
 
-    selectFirstValidValue () {
-      if (!this.tokenChunksPos || !this.tokenChunksPos.length) { return }
+    selectFirstValidValue() {
+      if (!this.tokenChunksPos || !this.tokenChunksPos.length) {
+        return
+      }
       const firstSlotType = this.tokenChunksPos[0].type
       if (firstSlotType === 'hour') {
         this.getClosestHourItem()
@@ -1650,7 +1759,7 @@ export default {
       this.selectFirstSlot()
     },
 
-    getClosestHourItem (currentValue, direction = 'U') {
+    getClosestHourItem(currentValue, direction = 'U') {
       if (!this.validHoursList || !this.validHoursList.length) {
         if (this.debugMode) {
           this.debugLog(`No valid hour values found, please check your "hour-range" config\nhour-range: ${JSON.stringify(this.hourRange)}`)
@@ -1665,7 +1774,7 @@ export default {
         if (!this.baseOn12Hours) {
           return item === currentValue
         } else {
-          const valueKey = `${currentValue}${this.lowerCasedApm(this.apm) === 'pm' ? 'p' : 'a'}` 
+          const valueKey = `${currentValue}${this.lowerCasedApm(this.apm) === 'pm' ? 'p' : 'a'}`
           return item === valueKey
         }
       })
@@ -1681,7 +1790,7 @@ export default {
       this.setManualHour(nextItem)
     },
 
-    getClosestValidItemInCol (column, currentValue, direction = 'U') {
+    getClosestValidItemInCol(column, currentValue, direction = 'U') {
       if (column === 'hour') {
         this.getClosestHourItem(currentValue, direction)
       } else {
@@ -1692,14 +1801,16 @@ export default {
       }
     },
 
-    setSanitizedValueToSection (section, inputValue) {
-      if (!section || !this.getTokenByType(section)) { return }
+    setSanitizedValueToSection(section, inputValue) {
+      if (!section || !this.getTokenByType(section)) {
+        return
+      }
       // NOTE: Disabled values are allowed here, followed by an 'error' event, though
       const sanitizedValue = this.sanitizedValue(this.getTokenByType(section), inputValue)
       this[section] = sanitizedValue
     },
 
-    setManualHour (nextItem) {
+    setManualHour(nextItem) {
       if (this.is12hRange(nextItem)) {
         const hourT = this.match12hRange(nextItem)
         const apmValue = hourT[2] === 'a' ? 'AM' : 'PM'
@@ -1710,7 +1821,7 @@ export default {
       }
     },
 
-    debounceSetInputSelection ({start = 0, end = 0 }) {
+    debounceSetInputSelection({start = 0, end = 0}) {
       nextTick(() => {
         this.setInputSelectionRange(start, end)
       })
@@ -1724,22 +1835,22 @@ export default {
       }, 30)
     },
 
-    setInputSelectionRange (start, end) {
+    setInputSelectionRange(start, end) {
       if (this.$refs && this.$refs.input) {
         this.$refs.input.setSelectionRange(start, end)
       }
     },
 
-    getCurrentTokenChunk () {
+    getCurrentTokenChunk() {
       return this.getNearestChunkByPos((this.$refs.input && this.$refs.input.selectionStart) || 0)
     },
 
-    selectFirstSlot () {
+    selectFirstSlot() {
       const firstChunkPos = this.getNearestChunkByPos(0)
       this.debounceSetInputSelection(firstChunkPos)
     },
 
-    toLateralToken (toLeft) {
+    toLateralToken(toLeft) {
       const currentChunk = this.getCurrentTokenChunk()
       if (!currentChunk) {
         this.selectFirstValidValue()
@@ -1760,8 +1871,10 @@ export default {
       this.debounceSetInputSelection(targetSlotPos)
     },
 
-    isCustomApmText (inputData) {
-      if (!inputData || !inputData.length) { return false }
+    isCustomApmText(inputData) {
+      if (!inputData || !inputData.length) {
+        return false
+      }
       if (this.amText && this.amText === inputData) {
         return this.apmType === 'A' ? 'AM' : 'am'
       }
@@ -1771,7 +1884,7 @@ export default {
       return false
     },
 
-    replaceCustomApmText (inputString) {
+    replaceCustomApmText(inputString) {
       if (this.amText && this.amText.length && inputString.includes(this.amText)) {
         return inputString.replace(new RegExp(this.amText, 'g'), this.apmType === 'A' ? 'AM' : 'am')
       } else if (this.pmText && this.pmText.length && inputString.includes(this.pmText)) {
@@ -1780,8 +1893,10 @@ export default {
       return inputString
     },
 
-    checkDropDirection () {
-      if (!this.$el) { return }
+    checkDropDirection() {
+      if (!this.$el) {
+        return
+      }
       let container
       if (this.containerId && this.containerId.length) {
         container = document.getElementById(this.containerId)
@@ -1806,27 +1921,27 @@ export default {
     // Helpers
     //
 
-    is12hRange (value) {
+    is12hRange(value) {
       return /^\d{1,2}(a|p|A|P)$/.test(value)
     },
 
-    match12hRange (value) {
+    match12hRange(value) {
       return value.match(/^(\d{1,2})(a|p|A|P)$/)
     },
 
-    isNumber (value) {
+    isNumber(value) {
       return !isNaN(parseFloat(value)) && isFinite(value)
     },
 
-    isBasicType (type) {
+    isBasicType(type) {
       return CONFIG.BASIC_TYPES.includes(type)
     },
 
-    lowerCasedApm (apmValue) {
+    lowerCasedApm(apmValue) {
       return (apmValue || '').toLowerCase()
     },
 
-    getTokenRegex (token) {
+    getTokenRegex(token) {
       switch (token) {
         case 'HH':
           return '([01][0-9]|2[0-3]|H{2})'
@@ -1857,44 +1972,50 @@ export default {
       }
     },
 
-    isEmptyValue (targetToken, testValue) {
+    isEmptyValue(targetToken, testValue) {
       return (!testValue || !testValue.length) || (testValue && testValue === targetToken)
     },
 
-    isValidValue (targetToken, testValue) {
-      if (!targetToken || this.isEmptyValue(targetToken, testValue)) { return false }
+    isValidValue(targetToken, testValue) {
+      if (!targetToken || this.isEmptyValue(targetToken, testValue)) {
+        return false
+      }
       const tokenRegexStr = this.getTokenRegex(targetToken)
-      if (!tokenRegexStr || !tokenRegexStr.length) { return false }
+      if (!tokenRegexStr || !tokenRegexStr.length) {
+        return false
+      }
       return (new RegExp(`^${tokenRegexStr}$`)).test(testValue)
     },
 
-    sanitizedValue (targetToken, inputValue) {
+    sanitizedValue(targetToken, inputValue) {
       if (this.isValidValue(targetToken, inputValue)) {
         return inputValue
       }
       return ''
     },
 
-    getTokenType (token) {
+    getTokenType(token) {
       return this.inUse.types[this.inUse.tokens.indexOf(token)] || ''
     },
 
-    getTokenByType (type) {
+    getTokenByType(type) {
       return this[`${type}Type`] || ''
     },
 
-    isMinuteOrSecond (type) {
+    isMinuteOrSecond(type) {
       return ['minute', 'second'].includes(type)
     },
 
     // Breaking attribution coercion changes in Vue 3
     // > https://v3.vuejs.org/guide/migration/attribute-coercion.html#overview
-    booleanAttr (isTrue = false) {
+    booleanAttr(isTrue = false) {
       return isTrue ? true : null
     },
 
-    debugLog (logText) {
-      if (!logText || !logText.length) { return }
+    debugLog(logText) {
+      if (!logText || !logText.length) {
+        return
+      }
       let identifier = ''
       if (this.id) {
         identifier += `#${this.id}`
@@ -1921,7 +2042,7 @@ export default {
           }
         }
       }
-      const finalLogText = `DEBUG: ${logText}${identifier ? `\n\t(${identifier})` : '' }`
+      const finalLogText = `DEBUG: ${logText}${identifier ? `\n\t(${identifier})` : ''}`
       if (window.console.debug && typeof window.console.debug === 'function') {
         window.console.debug(finalLogText)
       } else {
@@ -1930,14 +2051,14 @@ export default {
     }
   },
 
-  mounted () {
+  mounted() {
     window.clearTimeout(this.debounceTimer)
     window.clearTimeout(this.selectionTimer)
     window.clearTimeout(this.kbInputTimer)
     this.renderFormat()
   },
 
-  beforeUnmount () {
+  beforeUnmount() {
     window.clearTimeout(this.debounceTimer)
     window.clearTimeout(this.selectionTimer)
     window.clearTimeout(this.kbInputTimer)
@@ -1966,7 +2087,7 @@ export default {
          @compositionstart="onCompostionStart"
          @compositionend="onCompostionEnd"
          @paste="pasteHandler"
-         @keydown.esc.exact="escBlur" />
+         @keydown.esc.exact="escBlur"/>
   <div class="controls" v-if="showClearBtn || showDropdownBtn" tabindex="-1">
     <span v-if="!isActive && showClearBtn" class="clear-btn" tabindex="-1"
           :class="{'has-custom-btn': $slots && $slots.clearButton }"
@@ -2034,6 +2155,12 @@ export default {
             </template>
           </ul>
         </template>
+        <span v-text="opts.confirmText"
+              class="btn blue"
+              @click="this.toggleActive()"
+              tabindex="-1"
+        >
+        </span>
       </template><!-- / Common Keyboard Support -->
 
       <!--
@@ -2127,6 +2254,12 @@ export default {
             </template>
           </ul>
         </template>
+        <span v-text="opts.confirmText"
+              class="btn blue"
+              @click="this.toggleActive()"
+              tabindex="-1"
+        >
+        </span>
       </template><!-- / Advanced Keyboard Support -->
     </div>
   </div>
@@ -2187,7 +2320,7 @@ export default {
 
 .vue__time-picker .controls > * {
   cursor: pointer;
-  
+
   width: auto;
   display: flex;
   flex-flow: column nowrap;
@@ -2268,7 +2401,7 @@ export default {
   top: calc(2.2em + 2px);
   left: 0;
   background: #fff;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
   width: 10em;
   height: 10em;
   font-weight: normal;
@@ -2307,7 +2440,7 @@ export default {
 
 .vue__time-picker .dropdown ul.minutes,
 .vue__time-picker .dropdown ul.seconds,
-.vue__time-picker .dropdown ul.apms{
+.vue__time-picker .dropdown ul.apms {
   border-left: 1px solid #fff;
 }
 
@@ -2320,7 +2453,7 @@ export default {
 
 .vue__time-picker .dropdown ul li:not(.hint):not([disabled]):hover,
 .vue__time-picker .dropdown ul li:not(.hint):not([disabled]):focus {
-  background: rgba(0,0,0,.08);
+  background: rgba(0, 0, 0, .08);
   color: #161616;
   cursor: pointer;
 }
@@ -2343,5 +2476,38 @@ export default {
   color: #a5a5a5;
   cursor: default;
   font-size: 0.8em;
+}
+
+.vue__time-picker .dropdown {
+  margin-bottom: 45px;
+
+  .select-list {
+    position: relative;
+    height: 12em !important;
+    padding-bottom: 50px;
+
+    .btn {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 0;
+      width: 100%;
+      height: 44px;
+      color: #fff;
+      text-align: center;
+      line-height: 44px;
+      background: #41b883;
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: none;
+      }
+
+      &.blue {
+        @include btn;
+        background: #0070bd;
+      }
+    }
+  }
 }
 </style>
